@@ -408,9 +408,7 @@ function m.generate_cmake_lists(prj)
         end
         
         -- custom buildoptions
-        if #cfg.buildoptions > 0 then
-            p.x('target_compile_options(%s PUBLIC %s)', prj.name, table.concat(cfg.buildoptions, " "))
-        end
+        p.x('target_compile_options(%s PUBLIC %s)', prj.name, table.concat(cfg.buildoptions, " ") .. " -std=" .. string.lower(prj.cppdialect)) -- GGJORVEN: Default C++ version flag
         
         -- linker options
         local linker_options = ""
@@ -582,6 +580,11 @@ function m.generate_project(prj)
     p.pop('}') -- defaultConfig 
             
     -- abis
+    -- GGJORVEN: Default abi's
+    if #prj.androidabis < 0 then
+        prj.androidabis = { 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' }
+    end
+
     abi_list = m.csv_string_from_table(prj.androidabis)
     p.push('buildTypes {')
     for cfg in project.eachconfig(prj) do

@@ -427,20 +427,6 @@ function m.generate_cmake_lists(prj)
             linker_options = linker_options .. " -L" .. libdir
         end
 
-        --------------------------------------
-        -- GGJORVEN: Custom libdirs
-        --------------------------------------
-        for prj in workspace.eachproject(globalWorkspace) do
-            local linkoption = ""
-            
-            linkoption = "-L" .. globalWorkspace.location .. "/" .. prj.name .. "/" .. path.getname(globalWorkspace.location) .. "/intermediates/cxx/"
-            linkoption = (linkoption .. cfg.buildcfg .. "/${HASH}/obj/${CMAKE_ANDROID_ARCH_ABI}/ ")
-            
-            -- print(linkoption)
-            linker_options = linker_options .. linkoption
-        end   
-        --------------------------------------
-
         local links = toolset.getlinks(cfg, "system", "fullpath")
         if links then
             linker_options = linker_options .. " " .. table.concat(links, " ")
@@ -492,6 +478,8 @@ function m.generate_project(prj)
 
     if prj.androidnamespace then
         p.x('namespace "%s"', prj.androidnamespace)
+    else -- GGJORVEN: Add default namespace
+        p.x('namespace "%s"', path.getname(globalWorkspace.location) .. "." .. prj.name .. ".main")
     end
 
     complete_signing_info = false

@@ -319,3 +319,26 @@ p.api.register
     scope = "project",
     kind = "string"
 }
+
+-- GGJORVEN: Prefab support
+p.api.register
+{
+    name = "androidprefab",
+    scope = "project",
+    kind = "string"
+}
+
+-- GGJORVEN: CMake packages
+p.api.register
+{
+    name = "androidfindcmakepackages",
+    scope = "project",
+    kind = "list:string"
+}
+
+p.api.register
+{
+    name = "androidlinkcmakepackages",
+    scope = "project",
+    kind = "list:string"
+}

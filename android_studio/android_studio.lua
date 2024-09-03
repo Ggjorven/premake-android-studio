@@ -353,8 +353,13 @@ function m.generate_cmake_lists(prj)
             end 
         end
     end
-    
+
     p.x('project (%s)', prj.name)
+    
+    -- GGJORVEN: Find cmake packages
+    for _, package in ipairs(prj.androidfindcmakepackages) do
+        p.x("find_package(%s)", package)
+    end
     
     cmake_kind = get_cmake_program_kind(prj.kind)
     for cfg in project.eachconfig(prj) do                
@@ -423,6 +428,11 @@ function m.generate_cmake_lists(prj)
         -- libdirs
         for _, libdir in ipairs(cfg.libdirs) do
             linker_options = linker_options .. " -L" .. libdir
+        end
+
+        -- GGJORVEN: CMake packages
+        for _, package in ipairs(prj.androidlinkcmakepackages) do
+            linker_options = linker_options .. " " .. package
         end
 
         local links = toolset.getlinks(cfg, "system", "fullpath")
@@ -604,6 +614,13 @@ function m.generate_project(prj)
         p.pop('}') -- cfg.name
     end
     p.pop('}') -- build types
+
+    -- GGJORVEN: Prefab (buildFeatures)
+    p.push('buildFeatures {')
+    if prj.androidprefab ~= nil then
+        p.x("prefab %s", string.lower(prj.androidprefab))
+    end
+    p.pop('}') -- buildFeatures
 
     -- custom build commands
     if prj.prebuildcommands then

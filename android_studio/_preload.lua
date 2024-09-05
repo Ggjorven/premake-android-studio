@@ -342,3 +342,12 @@ p.api.register
     scope = "project",
     kind = "list:string"
 }
+
+-- GGJORVEN: Force module version
+p.api.register
+{
+    name = "androidmoduleversions",
+    scope = "project",
+    kind = "list:string"
+    -- default = { "org.jetbrains.kotlin:kotlin-stdlib:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22" }
+}

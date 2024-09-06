@@ -567,6 +567,21 @@ function m.generate_project(prj)
     p.w('versionCode %s', prj.androidversioncode)
     p.w('versionName \"%s\"', prj.androidversionname)
 
+
+    ----------------------------------------------
+    -- GGJORVEN: Force module versions
+    ----------------------------------------------
+    p.push('configurations.configureEach {')
+    p.push('resolutionStrategy {')
+
+    for _, version in ipairs(prj.androidmoduleversions) do
+        p.w("force '%s'", version)
+    end
+
+    p.pop('}')
+    p.pop('}')
+    ----------------------------------------------
+    
     ----------------------------------------------
     -- GGJORVEN: Custom rule for static libs
     ----------------------------------------------
@@ -721,10 +736,26 @@ function m.generate_project(prj)
             if dep:find("^implementation ") then
                 p.x("%s", dep)
             else
-                p.x("implementation '%s'", dep)
+                -- GGJORVEN: Version force
+                p.push("implementation('%s') {", dep)
+
+                for _, version in ipairs(prj.androidmoduleversions) do
+                    local group, module = version:match("([^:]+):([^:]+):")
+
+                    if module == 'kotlin-stdlib' then
+                        goto continue
+                    end
+
+                    p.w("exclude group: '%s', module: '%s'", group, module)
+                    ::continue::
+                end
+
+
+                p.pop('}')
             end
         end
     end
+
     
     -- project compile links
     for _, dep in ipairs(project.getdependencies(prj, "dependOnly")) do
